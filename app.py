@@ -3,6 +3,7 @@ import sqlite3
 
 app = Flask(__name__)
 
+
 def init_db():
     with sqlite3.connect('database.db') as conn:
 
@@ -14,11 +15,15 @@ def init_db():
                      imagem_url TEXT NOT NULL
                      )""")
         print('Banco de dados criado!')
+
+
 init_db()
+
 
 @app.route('/')
 def home_page():
     return "<h2>Minha pagina com flask</h2>"
+
 
 @app.route('/doar', methods=['POST'])
 def doar():
@@ -31,12 +36,12 @@ def doar():
     imagem_url = dados.get('imagem_url')
 
     if not all([titulo, categoria, autor, imagem_ulr]):
-        return jsonify({"erro":"Todos os campos são obrigatórios"}), 400
+        return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
 
-    with sqlite3.connect('database.db') as conn: 
+    with sqlite3.connect('database.db') as conn:
         conn.execute(f""" INSERT INTO livros (titulo,categoria,autor,imagem_url) 
                     VALUES (?,?,?,?)
-                     """, ({titulo},{categoria},{autor},{imagem_url}))
+                     """, ({titulo}, {categoria}, {autor}, {imagem_url}))
         conn.commit()
 
         return jsonify({"mensagem": "Livros cadrastrados com sucesso"}), 201
@@ -47,6 +52,18 @@ def listar_livros():
     with sqlite3.connect('tabase.db') as conn:
         livros = conn.execute("SELECT * FROM livros").fetchall()
 
+    livros_formatados = []
+
+    for livro in livros:
+        dicionario_livros = {
+            "id": livro[0],
+            "titulo": livro[1],
+            "categoria": livro[2],
+            "autor": livro[3],
+            "imagem_url": [4]
+        }
+        livros_formatados.append(dicionario_livros)
+    return jsonify(livros_formatados)
 
 
 if __name__ == '__main__':
