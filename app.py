@@ -35,13 +35,13 @@ def doar():
     autor = dados.get('autor')
     imagem_url = dados.get('imagem_url')
 
-    if not all([titulo, categoria, autor, imagem_ulr]):
-        return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
+    if not all([titulo, categoria, autor, imagem_url]):
+        return jsonify({'erro': 'Todos os campos são obrigatórios'}), 400
 
     with sqlite3.connect('database.db') as conn:
         conn.execute(f""" INSERT INTO livros (titulo,categoria,autor,imagem_url) 
                     VALUES (?,?,?,?)
-                     """, ({titulo}, {categoria}, {autor}, {imagem_url}))
+                     """, (titulo, categoria, autor, imagem_url))
         conn.commit()
 
         return jsonify({"mensagem": "Livros cadrastrados com sucesso"}), 201
@@ -49,7 +49,7 @@ def doar():
 
 @app.route('/livros', methods=['GET'])
 def listar_livros():
-    with sqlite3.connect('tabase.db') as conn:
+    with sqlite3.connect('database.db') as conn:
         livros = conn.execute("SELECT * FROM livros").fetchall()
 
     livros_formatados = []
